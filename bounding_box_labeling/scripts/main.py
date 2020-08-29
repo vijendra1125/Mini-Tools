@@ -12,11 +12,8 @@ import core
 
 
 def main():
-    image_names = os.listdir(params.DATA_DIR)
-    labler = core.bb_labeling('labler')
-    for image_name in image_names:
-        image_path = os.path.join(params.DATA_DIR, image_name)
-        labler.label_image(image_path)
+    labeler = core.bb_labeling()
+    labeler.label_image()
 
 
 if __name__ == '__main__':

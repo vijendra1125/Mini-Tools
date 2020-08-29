@@ -11,3 +11,5 @@ DATA_DIR = '../data'
 OUTPUT_DIR = '../output'
 # factor by which image should be scaled before labeling
 SCALE_FACTOR = 1/8
+# save labeled image
+SAVE_LABELED = True
