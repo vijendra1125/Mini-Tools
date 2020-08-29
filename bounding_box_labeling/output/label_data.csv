@@ -1,3 +1,5 @@
-image_name,nodeNumber,nodeCenter,nodeRectC1,nodeRectC2
-sample_image.jpg,0,"(87, 136)","(82, 131)","(93, 141)"
-sample_image.jpg,1,"(157, 138)","(151, 134)","(163, 142)"
+imageName,nodeNumber,nodeCenter,nodeRectC1,nodeRectC2
+sample_image.jpg,0,"(88, 135)","(83, 132)","(93, 139)"
+sample_image.jpg,1,"(158, 137)","(153, 133)","(163, 141)"
+sample_image2.jpg,0,"(88, 134)","(84, 131)","(93, 138)"
+sample_image2.jpg,1,"(158, 136)","(153, 132)","(164, 141)"
