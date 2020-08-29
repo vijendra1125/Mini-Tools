@@ -80,7 +80,7 @@ class bb_labeling:
             x2, y2 = self.captured_bb[i+1]
             node_x = min(x1, x2) + abs(x1-x2)//2
             node_y = min(y1, y2) + abs(y1-y2)//2
-            self.bb_centers.append([node_id, (node_x, node_y),
+            self.bb_centers.append([self.image_name, node_id, (node_x, node_y),
                                     self.captured_bb[i], self.captured_bb[i+1]])
             print(self.bb_centers[node_id][1], node_id)
 
@@ -89,9 +89,9 @@ class bb_labeling:
         font_scale = 0.5
         for i in range(len(self.bb_centers)):
             cv2.circle(self.image_org,
-                       self.bb_centers[i][1], 2, (0, 255, 0), -1)
+                       self.bb_centers[i][2], 2, (0, 255, 0), -1)
             cv2.putText(self.image_org, str(
-                self.bb_centers[i][0]), self.bb_centers[i][1], font, font_scale, (0, 0, 255), 2)
+                self.bb_centers[i][1]), self.bb_centers[i][2], font, font_scale, (0, 0, 255), 2)
         cv2.imwrite(os.path.join(params.OUTPUT_DIR,
                                  'labled_image.png'), self.image_org)
         cv2.imshow('image_with node', self.image_org)
@@ -99,7 +99,8 @@ class bb_labeling:
 
     def write_bb_csv(self):
         filename = os.path.join(params.OUTPUT_DIR, "label_data.csv")
-        fields = ['nodeNumber', 'nodeCenter', 'nodeRectC1', 'nodeRectC2']
+        fields = ['image_name', 'nodeNumber',
+                  'nodeCenter', 'nodeRectC1', 'nodeRectC2']
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(fields)
