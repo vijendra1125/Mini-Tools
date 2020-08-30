@@ -1,5 +1,10 @@
-imageName,nodeNumber,nodeCenter,nodeRectC1,nodeRectC2
-sample_image.jpg,0,"(88, 135)","(83, 132)","(93, 139)"
-sample_image.jpg,1,"(158, 137)","(153, 133)","(163, 141)"
-sample_image2.jpg,0,"(88, 134)","(84, 131)","(93, 138)"
-sample_image2.jpg,1,"(158, 136)","(153, 132)","(164, 141)"
+imageName,nodeNumber,nodeCenter,nodeRectC1,nodeRectC2,className
+sample_image.jpg,0,"(213, 196)","(200, 184)","(226, 209)",red
+sample_image.jpg,1,"(264, 245)","(252, 238)","(276, 253)",red
+sample_image2.jpg,0,"(199, 229)","(184, 213)","(215, 246)",red
+sample_image2.jpg,1,"(292, 276)","(277, 250)","(307, 303)",red
+sample_image.jpg,0,"(159, 176)","(147, 167)","(171, 185)",green
+sample_image2.jpg,0,"(151, 204)","(127, 180)","(175, 228)",green
+sample_image.jpg,0,"(206, 258)","(177, 229)","(235, 288)",blue
+sample_image.jpg,1,"(147, 390)","(137, 380)","(157, 401)",blue
+sample_image2.jpg,0,"(143, 280)","(118, 255)","(169, 305)",blue

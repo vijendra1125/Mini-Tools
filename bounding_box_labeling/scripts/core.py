@@ -7,31 +7,29 @@
 import cv2
 import os
 import csv
+import time
 
 import parameters as params
 
 
 class bb_labeling:
-    def __init__(self):
-        self.bb_border_width = 2
-        self.bb_color = (0, 255, 0)
-        self.bb_side_min_length = 2
+    bb_border_width = 2
+    bb_side_min_length = 2
+
+    def __init__(self, class_name, bb_color):
+        self.name = class_name
+        self.bb_color = bb_color
 
         self.captured_bb = []
         self.top_left_captured = False
-        self.first_intermediate_drawn = True
         self.last_mouse_pos = (0, 0)
-
-        self.csv_init()
-
-    def __del__(self):
-        cv2.destroyallwindows()
 
     def read_image(self, image_path):
         self.image_org = cv2.imread(image_path)
         self.image_org = cv2.resize(self.image_org, dsize=(0, 0),
                                     fx=params.SCALE_FACTOR, fy=params.SCALE_FACTOR)
         self.image = self.image_org.copy()
+        self.image_temp = self.image_org.copy()
 
     def capture_bb(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -51,31 +49,17 @@ class bb_labeling:
                               self.captured_bb[-2], self.captured_bb[-1],
                               self.bb_color, self.bb_border_width)
                 cv2.imshow(self.image_name, self.image)
+                self.image_temp = self.image.copy()
             else:
-                self.image[top-self.bb_border_width:bottom+self.bb_border_width,
-                           left-self.bb_border_width:right+self.bb_border_width] = \
-                    self.image_org[top-self.bb_border_width:bottom+self.bb_border_width,
-                                   left-self.bb_border_width:right+self.bb_border_width]
+                self.image = self.image_temp.copy()
                 del self.captured_bb[-1]
             self.top_left_captured = False
-            self.first_intermediate_drawn = True
         elif self.top_left_captured:
-            if not self.first_intermediate_drawn:
-                left = min(
-                    self.captured_bb[-1][0], self.last_mouse_pos[0])-self.bb_border_width
-                right = max(
-                    self.captured_bb[-1][0], self.last_mouse_pos[0])+self.bb_border_width
-                top = min(
-                    self.captured_bb[-1][1], self.last_mouse_pos[1])-self.bb_border_width
-                bottom = max(
-                    self.captured_bb[-1][1], self.last_mouse_pos[1])+self.bb_border_width
-                self.image[top:bottom, left:right] = \
-                    self.image_org[top:bottom, left:right]
+            self.image = self.image_temp.copy()
             cv2.rectangle(self.image,
                           self.captured_bb[-1], (x, y),
                           self.bb_color, self.bb_border_width)
             cv2.imshow(self.image_name, self.image)
-            self.first_intermediate_drawn = False
             self.last_mouse_pos = (x, y)
 
     def find_bb_center(self):
@@ -87,7 +71,7 @@ class bb_labeling:
             node_x = min(x1, x2) + abs(x1-x2)//2
             node_y = min(y1, y2) + abs(y1-y2)//2
             self.bb_centers.append([self.image_name, node_id, (node_x, node_y),
-                                    self.captured_bb[i], self.captured_bb[i+1]])
+                                    self.captured_bb[i], self.captured_bb[i+1], self.name])
             # print(self.bb_centers[node_id][1], node_id)
 
     def save_labeled_images(self):
@@ -102,12 +86,12 @@ class bb_labeling:
         cv2.imwrite(os.path.join(params.OUTPUT_DIR,
                                  'labled_{}'.format(self.image_name)), image_temp)
 
-    def csv_init(self):
+    def csv_init():
         filename = os.path.join(params.OUTPUT_DIR, "label_data.csv")
-        if os.path.exists(filename):
-            os.remove(filename)
+        # if os.path.exists(filename):
+        #     os.remove(filename)
         fields = ['imageName', 'nodeNumber',
-                  'nodeCenter', 'nodeRectC1', 'nodeRectC2']
+                  'nodeCenter', 'nodeRectC1', 'nodeRectC2', 'className']
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(fields)
@@ -134,14 +118,14 @@ class bb_labeling:
                     self.image = self.image_org.copy()
                     self.captured_bb = []
                 elif (key == ord("u")) and (len(self.captured_bb) != 0):
-                    row_up = self.captured_bb[-2][1]-self.bb_border_width
-                    row_down = self.captured_bb[-1][1]+self.bb_border_width
-                    col_left = self.captured_bb[-2][0]-self.bb_border_width
-                    col_right = self.captured_bb[-1][0]+self.bb_border_width
-                    self.image[row_up:row_down,
-                               col_left:col_right] = self.image_org[row_up:row_down, col_left:col_right]
-                    cv2.imshow(self.image_name, self.image)
                     del self.captured_bb[-2:]
+                    self.image = self.image_org.copy()
+                    for i in range(0, len(self.captured_bb), 2):
+                        cv2.rectangle(self.image,
+                                      self.captured_bb[i], self.captured_bb[i+1],
+                                      self.bb_color, self.bb_border_width)
+                    cv2.imshow(self.image_name, self.image)
+                    self.image_temp = self.image.copy()
                 elif key == ord("n"):
                     break
             self.find_bb_center()
@@ -153,3 +137,4 @@ class bb_labeling:
             self.top_left_captured = False
             self.first_intermediate_drawn = True
             self.last_mouse_pos = (0, 0)
+        cv2.destroyAllWindows()
