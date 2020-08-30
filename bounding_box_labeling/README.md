@@ -1,7 +1,8 @@
 # Bounding box labeling
 
 ## About
-A tool label images with bounding box and saving annotation in csv file
+A tool label images with bounding box and saving annotation in csv file.
+
 Currently available features:
 * Choose between labeling from scratch and labeling on top of saved annotations 
 * Label a large number of classes
@@ -30,7 +31,7 @@ Apart from above key, any other key could be assigned to defined class
 * Csv 1.0
 
 ## TODO
-* Cleanup, reafctoring and comment
+* Cleanup, refactoring and comment
 
 ## Upcoming Features
 * Deleting previously added bounding box
