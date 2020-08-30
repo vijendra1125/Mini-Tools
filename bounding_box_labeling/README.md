@@ -21,6 +21,9 @@ Apart from above key, any other key could be assigned to defined class
 * OpenCV 4.2.0
 * Csv 1.0
 
+## TODO
+* Reafctoring and comment
+
 ## Upcoming Features
 * Deleting previously added bounding box
 * Providing GUI
