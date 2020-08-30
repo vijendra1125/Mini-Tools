@@ -2,8 +2,16 @@
 
 ## About
 A tool label images with bounding box and saving annotation in csv file
+Currently available features:
+* Choose between labeling from scratch and labeling on top of saved annotations 
+* Label a large number of classes
+* Navigate between images while labeling
+* Switch between classes to label
+* Unlimited undo
+* Reset image label
 
 ## How to use
+
 
 ## Reserved keys:
 | key | function                                 |
@@ -22,8 +30,10 @@ Apart from above key, any other key could be assigned to defined class
 * Csv 1.0
 
 ## TODO
-* Reafctoring and comment
+* Cleanup, reafctoring and comment
 
 ## Upcoming Features
 * Deleting previously added bounding box
+* Display bounding box ID
+* add info display board
 * Providing GUI
