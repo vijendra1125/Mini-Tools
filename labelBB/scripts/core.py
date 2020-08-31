@@ -119,7 +119,11 @@ class bb_labeling:
             writer.writerows(self.image_labels[self.bb_count:])
 
     def label_images(self):
-        image_names = os.listdir(params.DATA_DIR)
+        filenames = os.listdir(params.DATA_DIR)
+        image_names = []
+        for name in filenames:
+            if name.endswith(params.FILE_EXT):
+                image_names.append(name)
         image_names.sort()
         image_count = len(image_names)
         current_image_id = 0
