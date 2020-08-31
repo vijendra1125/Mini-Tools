@@ -137,7 +137,7 @@ class bb_labeling:
                         self.bb_color = self.label_dict[item][2]
                 if key == ord("c"):
                     self.image = self.image_org.copy()
-                    self.image_labels = []
+                    del self.image_labels[self.bb_count:]
                 elif (key == ord("u")) and (len(self.image_labels) != 0):
                     del self.image_labels[-1]
                     self.image = self.image_org.copy()
