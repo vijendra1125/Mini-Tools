@@ -36,7 +36,7 @@ Apart from above key, any other key could be assigned to defined class
 * Cleanup, refactoring and comment
 
 ## Features in Future
-* Deleting previously added bounding box
+* Option to delete previously added bounding boxes
 * Display bounding box ID
 * add info display board
-* Providing GUI
+* Provide GUI
