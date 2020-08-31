@@ -29,11 +29,12 @@ Apart from above key, any other key could be assigned to defined class
 * Python 3.7.4
 * OpenCV 4.2.0
 * Csv 1.0
+* Numpy 1.18.1
 
 ## TODO
 * Cleanup, refactoring and comment
 
-## Upcoming Features
+## Features in Future
 * Deleting previously added bounding box
 * Display bounding box ID
 * add info display board

@@ -4,32 +4,20 @@
 # License: MIT
 # Brief:
 #
-import cv2
 import os
+import cv2
 import csv
-import time
 import numpy as np
 
 import parameters as params
 
 
 class bb_labeling:
-    bb_border_width = 2
-    bb_side_min_length = 2
-
-    def __init__(self, label_dict):
-        self.label_dict = label_dict
-        self.label_key = list(self.label_dict.keys())[0]
-        self.label_id = list(self.label_dict.values())[0][0]
-        self.label_name = list(self.label_dict.values())[0][1]
-        self.bb_color = list(self.label_dict.values())[0][2]
-
-        self.captured_bb = []
-        self.top_left_captured = False
-        self.image_labels = []
+    bb_border_width = 2  # in pixels
+    bb_side_min_length = 2  # in pixels
 
     def start_new():
-        filename = os.path.join(params.OUTPUT_DIR, "label_data.csv")
+        filename = os.path.join(params.OUTPUT_DIR, "annotations.csv")
         if os.path.exists(filename):
             os.remove(filename)
         fields = ['image_name', 'label_key', 'label_name', 'label_id',
@@ -38,16 +26,31 @@ class bb_labeling:
             writer = csv.writer(csvfile)
             writer.writerow(fields)
 
-    def read_image(self, image_path):
-        self.image_org = cv2.imread(image_path)
-        self.image_org = cv2.resize(self.image_org, dsize=(0, 0),
+    def __init__(self, label_dict):
+        self.label_dict = label_dict
+        self.label_key = list(self.label_dict.keys())[0]
+        self.label_id = list(self.label_dict.values())[0][0]
+        self.label_name = list(self.label_dict.values())[0][1]
+        self.bb_color = list(self.label_dict.values())[0][2]
+        self.csv_filename = "annotations.csv"
+
+        self.top_left_captured = False
+        self.image_labels = []
+
+    def read_image(self, name):
+        self.image_name = os.path.splitext(name)[0]
+        image_path = os.path.join(params.DATA_DIR, name)
+        self.image_org = cv2.resize(cv2.imread(image_path), dsize=(0, 0),
                                     fx=params.SCALE_FACTOR, fy=params.SCALE_FACTOR)
         self.image = self.image_org.copy()
         self.image_temp = self.image_org.copy()
+        cv2.namedWindow(self.image_name)
+        cv2.setMouseCallback(self.image_name, self.mouse_capture)
 
     def compile_capture_data(self, left, top, right, bottom):
-        return [self.image_name, self.label_key, self.label_name, self.label_id,
-                len(self.image_labels), left, top, right, bottom]
+        return [self.image_name, self.label_key, self.label_name,
+                self.label_id, len(self.image_labels),
+                left, top, right, bottom]
 
     def mouse_capture(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -85,13 +88,13 @@ class bb_labeling:
             cv2.imshow(self.image_name, self.image)
 
     def write_bb_csv(self):
-        filename = os.path.join(params.OUTPUT_DIR, "label_data.csv")
+        filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
         with open(filename, 'a') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(self.image_labels[self.bb_count:])
 
-    def fetch_image_labels(self):
-        filename = os.path.join(params.OUTPUT_DIR, "label_data.csv")
+    def prepare_image(self):
+        filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
         with open(filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
             data_list = list(reader)
@@ -103,6 +106,14 @@ class bb_labeling:
             self.image_labels = []
             for row in occurence:
                 self.image_labels = data_array[row, :].tolist()
+        self.bb_count = len(self.image_labels)
+        for label in self.image_labels:
+            color = self.label_dict[label[1]][2]
+            cv2.rectangle(
+                self.image, (int(label[-4]), int(label[-3])),
+                (int(label[-2]), int(label[-1])),
+                color, self.bb_border_width)
+        self.image_temp = self.image.copy()
 
     def label_images(self):
         image_names = os.listdir(params.DATA_DIR)
@@ -110,27 +121,21 @@ class bb_labeling:
         image_count = len(image_names)
         current_image_id = 0
         while True:
-            name = image_names[current_image_id]
-            self.image_name = os.path.splitext(name)[0]
-            image_path = os.path.join(params.DATA_DIR, name)
-            self.read_image(image_path)
-            cv2.namedWindow(self.image_name)
-            cv2.setMouseCallback(self.image_name, self.mouse_capture)
-            self.fetch_image_labels()
-            self.bb_count = len(self.image_labels)
-            for label in self.image_labels:
-                color = self.label_dict[label[1]][2]
-                cv2.rectangle(
-                    self.image, (int(label[-4]), int(label[-3])),
-                    (int(label[-2]), int(label[-1])),
-                    color, self.bb_border_width)
+            self.read_image(image_names[current_image_id])
+            self.prepare_image()
             while True:
                 cv2.imshow(self.image_name, self.image)
                 key = cv2.waitKey(1) & 0xFF
+                for item in list(self.label_dict.keys()):
+                    if key == ord(item):
+                        self.label_key = item
+                        self.label_id = self.label_dict[item][0]
+                        self.label_name = self.label_dict[item][1]
+                        self.bb_color = self.label_dict[item][2]
                 if key == ord("c"):
                     self.image = self.image_org.copy()
-                    self.captured_bb = []
-                elif (key == ord("u")) and (len(self.captured_bb) != 0):
+                    self.image_labels = []
+                elif (key == ord("u")) and (len(self.image_labels) != 0):
                     del self.image_labels[-1]
                     self.image = self.image_org.copy()
                     for label in self.image_labels:
@@ -149,17 +154,7 @@ class bb_labeling:
                     break
                 elif key == ord("f"):
                     break
-                for item in list(self.label_dict.keys()):
-                    if key == ord(item):
-                        self.label_key = item
-                        self.label_id = self.label_dict[item][0]
-                        self.label_name = self.label_dict[item][1]
-                        self.bb_color = self.label_dict[item][2]
-
             self.write_bb_csv()
-            self.captured_bb = []
-            self.top_left_captured = False
             cv2.destroyWindow(self.image_name)
             if key == ord("f"):
                 break
-        cv2.destroyAllWindows()

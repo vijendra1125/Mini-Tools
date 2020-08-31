@@ -6,3 +6,11 @@ sample_image2,g,green,1,1,67,91,115,143
 sample_image2,b,blue,2,2,173,198,184,212
 sample_image2,g,green,1,3,245,266,319,350
 sample_image2,r,red,0,4,127,314,160,344
+sample_image,r,0,0,4,209,260,255,308
+sample_image,r,0,0,5,205,212,260,234
+sample_image,r,0,0,6,236,150,258,178
+sample_image2,r,0,0,5,236,87,276,131
+sample_image2,r,0,0,6,230,201,265,234
+sample_image2,r,0,0,7,120,216,157,254
+sample_image,r,0,0,7,91,169,113,187
+sample_image,r,0,0,8,144,192,166,213
