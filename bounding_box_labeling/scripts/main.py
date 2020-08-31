@@ -12,8 +12,6 @@ import core
 
 
 def main():
-    if params.START_NEW:
-        core.bb_labeling.start_new()
     labeler = core.bb_labeling(params.LABEL_DICT)
     labeler.label_images()
 

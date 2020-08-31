@@ -16,16 +16,6 @@ class bb_labeling:
     bb_border_width = 2  # in pixels
     bb_side_min_length = 2  # in pixels
 
-    def start_new():
-        filename = os.path.join(params.OUTPUT_DIR, "annotations.csv")
-        if os.path.exists(filename):
-            os.remove(filename)
-        fields = ['image_name', 'label_key', 'label_name', 'label_id',
-                  'bb_id', 'left', 'top', 'right', 'bottom']
-        with open(filename, 'w') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(fields)
-
     def __init__(self, label_dict):
         self.label_dict = label_dict
         self.label_key = list(self.label_dict.keys())[0]
@@ -37,15 +27,18 @@ class bb_labeling:
         self.top_left_captured = False
         self.image_labels = []
 
-    def read_image(self, name):
-        self.image_name = os.path.splitext(name)[0]
-        image_path = os.path.join(params.DATA_DIR, name)
-        self.image_org = cv2.resize(cv2.imread(image_path), dsize=(0, 0),
-                                    fx=params.SCALE_FACTOR, fy=params.SCALE_FACTOR)
-        self.image = self.image_org.copy()
-        self.image_temp = self.image_org.copy()
-        cv2.namedWindow(self.image_name)
-        cv2.setMouseCallback(self.image_name, self.mouse_capture)
+        if params.START_NEW:
+            self.start_new()
+
+    def start_new(self):
+        filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
+        if os.path.exists(filename):
+            os.remove(filename)
+        fields = ['image_name', 'label_key', 'label_name', 'label_id',
+                  'bb_id', 'left', 'top', 'right', 'bottom']
+        with open(filename, 'w') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(fields)
 
     def compile_capture_data(self, left, top, right, bottom):
         return [self.image_name, self.label_key, self.label_name,
@@ -87,11 +80,15 @@ class bb_labeling:
                           self.bb_color, self.bb_border_width)
             cv2.imshow(self.image_name, self.image)
 
-    def write_bb_csv(self):
-        filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
-        with open(filename, 'a') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerows(self.image_labels[self.bb_count:])
+    def read_image(self, name):
+        self.image_name = os.path.splitext(name)[0]
+        image_path = os.path.join(params.DATA_DIR, name)
+        self.image_org = cv2.resize(cv2.imread(image_path), dsize=(0, 0),
+                                    fx=params.SCALE_FACTOR, fy=params.SCALE_FACTOR)
+        self.image = self.image_org.copy()
+        self.image_temp = self.image_org.copy()
+        cv2.namedWindow(self.image_name)
+        cv2.setMouseCallback(self.image_name, self.mouse_capture)
 
     def prepare_image(self):
         filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
@@ -114,6 +111,12 @@ class bb_labeling:
                 (int(label[-2]), int(label[-1])),
                 color, self.bb_border_width)
         self.image_temp = self.image.copy()
+
+    def write_csv(self):
+        filename = os.path.join(params.OUTPUT_DIR, self.csv_filename)
+        with open(filename, 'a') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerows(self.image_labels[self.bb_count:])
 
     def label_images(self):
         image_names = os.listdir(params.DATA_DIR)
@@ -154,7 +157,7 @@ class bb_labeling:
                     break
                 elif key == ord("f"):
                     break
-            self.write_bb_csv()
+            self.write_csv()
             cv2.destroyWindow(self.image_name)
             if key == ord("f"):
                 break
