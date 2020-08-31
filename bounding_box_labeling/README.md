@@ -12,7 +12,8 @@ Currently available features:
 * Reset image label
 
 ## How to use
-
+* Edit parameters.py
+* Run main.py
 
 ## Reserved keys:
 | key | function                                 |

@@ -13,6 +13,7 @@ OUTPUT_DIR = '../output'
 START_NEW = False
 # dictionary defining class labels
 # format - <key>:[<class ID>, <class name>, <class color>]
+# check README.md for key which cant be assigned to class label
 LABEL_DICT = {'r': [0, 'red', (0, 0, 255)],
               'g': [1, 'green', (0, 255, 0)],
               'b': [2, 'blue', (255, 0, 0)]}
